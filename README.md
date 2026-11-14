@@ -41,11 +41,12 @@ Every reel goes through the critique strip before you see it. These are the real
 Requires Node 18+ and `ffmpeg`/`ffprobe` on PATH. [HyperFrames](https://github.com/heygen-com/hyperframes) runs through `npx` and downloads its own headless Chrome.
 
 ```bash
-git clone https://github.com/pedromuniz-ia/anti-slop-motion-skill ~/.claude/skills/anti-slop-motion
+git clone --depth 1 https://github.com/pedromuniz-ia/anti-slop-motion-skill /tmp/asm
+cp -r /tmp/asm/skills/anti-slop-motion ~/.claude/skills/anti-slop-motion
 node ~/.claude/skills/anti-slop-motion/kit/motion.mjs help
 ```
 
-For Codex, clone into `~/.codex/skills/anti-slop-motion`. For a single project, clone into `<project>/.claude/skills/anti-slop-motion`.
+For Codex or opencode, copy the same folder into that tool's skills directory (e.g. `~/.codex/skills/`). For a single project, use `<project>/.claude/skills/`. Copy only `skills/anti-slop-motion` (~170 KB): the repo root holds demo videos and is too big to load as a skill.
 
 > [!TIP]
 > For TTS narration, set `FISH_API_KEY` ([Fish Audio](https://fish.audio)). The word-alignment scripts in `kit/templates/projeto/` need Python 3 and `pip install faster-whisper`.
@@ -95,7 +96,8 @@ Os 3 vídeos lá em cima foram feitos com ela: narração no Fish Audio, telas r
 ### Instalação
 
 ```bash
-git clone https://github.com/pedromuniz-ia/anti-slop-motion-skill ~/.claude/skills/anti-slop-motion
+git clone --depth 1 https://github.com/pedromuniz-ia/anti-slop-motion-skill /tmp/asm
+cp -r /tmp/asm/skills/anti-slop-motion ~/.claude/skills/anti-slop-motion
 node ~/.claude/skills/anti-slop-motion/kit/motion.mjs help
 ```
 

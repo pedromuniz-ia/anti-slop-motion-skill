@@ -112,7 +112,7 @@ HyperFrames in practice (commands, camera, springs, captions, gotchas):
 ## Taking it to another environment
 
 The skill is this entire folder (no npm dependencies). To use it on another machine or hand it to
-someone else, clone this repo (`git clone https://github.com/pedromuniz-ia/anti-slop-motion-skill anti-slop-motion`) inside `~/.claude/skills/` (applies to every project) or
+someone else, copy the `skills/anti-slop-motion` folder of https://github.com/pedromuniz-ia/anti-slop-motion-skill into `~/.claude/skills/` (applies to every project) or
 into `<project>/.claude/skills/` (that project only), then check:
 
 ```bash
