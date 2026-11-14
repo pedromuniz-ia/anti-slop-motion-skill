@@ -55,7 +55,7 @@ Copy the whole folder into your skills directory (global, all projects):
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r anti-slop-motion ~/.claude/skills/anti-slop-motion
+git clone https://github.com/pedromuniz-ia/anti-slop-motion-skill ~/.claude/skills/anti-slop-motion
 node ~/.claude/skills/anti-slop-motion/kit/motion.mjs help
 ```
 
@@ -136,7 +136,7 @@ Copie a pasta inteira para o diretório de skills (global, vale para todos os pr
 
 ```bash
 mkdir -p ~/.claude/skills
-cp -r anti-slop-motion ~/.claude/skills/anti-slop-motion
+git clone https://github.com/pedromuniz-ia/anti-slop-motion-skill ~/.claude/skills/anti-slop-motion
 node ~/.claude/skills/anti-slop-motion/kit/motion.mjs help
 ```
 
