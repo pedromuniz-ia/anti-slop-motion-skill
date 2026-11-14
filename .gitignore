@@ -3,3 +3,4 @@ renders
 *.mp4
 *.wav
 .env
+!docs/videos/*.mp4
