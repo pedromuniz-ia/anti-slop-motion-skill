@@ -1,0 +1,119 @@
+<template>
+  <!--
+    Phone scene (HyperFrames): kinetic title, iPhone with a REAL screen rising, a camera that closes in on the
+    point the narration mentions, and a cut to another screen on the same device.
+    Copy to compositions/frames/NN-name.html, change the "cc-" prefix if you use more than one copy of this scene,
+    point the <img> tags at your screenshots (output of `motion.mjs phone`, 1179×2556) and adjust points A and B.
+    Frame: CSS by default (sharp at any zoom). To use a PNG frame (e.g. Apple's Product Bezels or a frame from a
+    Figma kit, 473×932 pt with the screen cut out at 40,40), fill in data-moldura on .cc-rig.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700;800&display=block");
+    [id="cc-bg"] { position: absolute; inset: 0; background: #fbf6ef; }
+    [id="cc-stage"] { position: absolute; inset: 0; }
+    .cc-line { position: absolute; left: 0; right: 0; text-align: center; overflow: hidden; }
+    /* the font goes on the text class: styles on the <template> root are dropped at assembly */
+    .cc-in { font-family: "Hanken Grotesk", sans-serif; color: #161210; display: inline-block; white-space: nowrap; font-size: 150px; font-weight: 700; letter-spacing: -0.05em; line-height: 1.12; }
+    .cc-w { display: inline-block; }
+    .cc-o { color: #ff4d17; }
+    [id="cc-title"] { top: 262px; height: 180px; }
+
+    /* device in pt: body 473×932, screen 393×852 at (40,40) */
+    .cc-rig { position: absolute; left: 0; top: 0; width: 473px; height: 932px; transform-origin: 0 0; }
+    .cc-ph { position: absolute; inset: 0; isolation: isolate; filter: drop-shadow(0 26px 40px rgba(22, 18, 16, 0.2)); }
+    .cc-body { position: absolute; left: 26px; top: 26px; width: 421px; height: 880px; border-radius: 72px; background: linear-gradient(160deg, #77777c 0%, #2c2c2e 30%, #1c1c1e 62%, #505054 100%); }
+    .cc-body::after { content: ""; position: absolute; inset: 3px; border-radius: 69px; background: #0a0a0a; }
+    .cc-btn { position: absolute; width: 5px; border-radius: 2px; background: linear-gradient(90deg, #3a3a3c, #6a6a6e); }
+    .cc-scr { position: absolute; left: 40px; top: 40px; width: 393px; height: 852px; border-radius: 56px; overflow: hidden; background: #fff; }
+    .cc-scr img { position: absolute; left: 0; top: 0; width: 393px; height: 852px; }
+    .cc-island { position: absolute; left: 134px; top: 11px; width: 125px; height: 37px; border-radius: 19px; background: #000; }
+    .cc-png { position: absolute; inset: 0; background: 0 0 / 473px 932px no-repeat; mix-blend-mode: multiply; }
+    /* cream under the close-ups: the caption breathes and the end of the screen fades without a hard cut */
+    [id="cc-fade"] { position: absolute; left: 0; right: 0; top: 1040px; bottom: 0; background: linear-gradient(to bottom, rgba(251, 246, 239, 0) 0px, #fbf6ef 170px); }
+  </style>
+
+  <div id="cc-root" data-composition-id="cena-celular" data-start="0" data-duration="5" data-width="1080" data-height="1920">
+    <div id="cc-bg" class="clip" data-start="0" data-duration="5" data-track-index="0"></div>
+    <div id="cc-stage" class="clip" data-start="0" data-duration="5" data-track-index="1">
+      <div class="cc-rig" id="cc-rig" data-moldura="" data-layout-allow-overflow>
+        <div class="cc-ph">
+          <div class="cc-body"></div>
+          <div class="cc-btn" style="left: 21px; top: 190px; height: 34px"></div>
+          <div class="cc-btn" style="left: 21px; top: 255px; height: 62px"></div>
+          <div class="cc-btn" style="left: 21px; top: 332px; height: 62px"></div>
+          <div class="cc-btn" style="left: 447px; top: 282px; height: 100px"></div>
+          <div class="cc-scr">
+            <img id="cc-a" src="assets/telas/tela-a.png" alt="" />
+            <img id="cc-b" src="assets/telas/tela-b.png" alt="" style="opacity: 0" />
+            <div class="cc-island"></div>
+          </div>
+        </div>
+      </div>
+      <div id="cc-fade"></div>
+      <div class="cc-line" id="cc-title"><span class="cc-in"><span class="cc-w" data-at="0.00">Terça,</span> <span class="cc-w cc-o" data-at="0.80">14h.</span></span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      var $ = function (id) { return document.getElementById(id); };
+      function merge(a, b) { var o = {}; for (var k in a) o[k] = a[k]; for (var k2 in b) o[k2] = b[k2]; return o; }
+
+      // camera: puts point (fx, fy) of the SCREEN (pt, 393×852) at point (ax, ay) of the 1080×1920 frame, with scale s and rotation r
+      function cam(s, fx, fy, ax, ay, r) {
+        r = r || 0;
+        var a = (r * Math.PI) / 180, px = 40 + fx, py = 40 + fy;
+        return { x: ax - s * (Math.cos(a) * px - Math.sin(a) * py), y: ay - s * (Math.sin(a) * px + Math.cos(a) * py), scale: s, rotation: r, transformOrigin: "0px 0px" };
+      }
+
+      // closed-form springs: a pure function of time (the render jumps to any frame). [stiffness, damping, duration until settled]
+      var MOLAS = { snappy: [320, 30, 0.5], padrao: [170, 26, 0.7], pesada: [90, 20, 1.0], brincalhona: [220, 14, 0.9] };
+      function mola(t, k, d) {
+        if (t <= 0) return 0;
+        var w0 = Math.sqrt(k), z = d / (2 * w0);
+        if (z < 1) { var wd = w0 * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w0 * t) * (Math.cos(wd * t) + ((z * w0) / wd) * Math.sin(wd * t)); }
+        return 1 - Math.exp(-w0 * t) * (1 + w0 * t);
+      }
+      function sp(nome) { var m = MOLAS[nome]; return { duration: m[2], ease: function (p) { return p >= 1 ? 1 : mola(p * m[2], m[0], m[1]); } }; }
+
+      // PNG frame, if any (hides the CSS one)
+      var rig = $("cc-rig");
+      if (rig.getAttribute("data-moldura")) {
+        var png = document.createElement("div");
+        png.className = "cc-png";
+        png.style.backgroundImage = "url(" + rig.getAttribute("data-moldura") + ")";
+        rig.querySelector(".cc-ph").appendChild(png);
+        Array.prototype.slice.call(rig.querySelectorAll(".cc-body, .cc-btn, .cc-island")).forEach(function (el) { el.style.display = "none"; });
+      }
+
+      // points of interest measured on the screenshot (screen pt): A = what the narration mentions on screen A; B = the detail on screen B
+      var A = { x: 196, y: 517 };
+      var B = { x: 330, y: 752 };
+
+      // title: each word enters when it is spoken (times from the aligned narration)
+      Array.prototype.slice.call(document.querySelectorAll('[id="cc-title"] .cc-w')).forEach(function (w) {
+        tl.fromTo(w, { yPercent: 105, opacity: 0.001 }, merge({ yPercent: 0, opacity: 1 }, sp("pesada")), parseFloat(w.getAttribute("data-at")));
+      });
+      tl.fromTo($("cc-title"), { y: 0, opacity: 1 }, { y: -110, opacity: 0, duration: 0.4, ease: "power3.in" }, 1.95);
+
+      // 1 · the device rises from under the title (heavy spring: no overshoot)
+      var wide = cam(1.45, 196, 300, 540, 1140, 0);
+      tl.fromTo(rig, merge(wide, { y: wide.y + 520 }), merge(wide, sp("pesada")), 0);
+      tl.to(rig, merge(cam(1.52, 196, 300, 540, 1120, 0), { duration: 1.05, ease: "none" }), 1.0);
+      // 2 · close-up on point A when the narration mentions it (standard spring: camera)
+      tl.to(rig, merge(cam(2.7, A.x, A.y, 540, 690, -2), sp("padrao")), 2.05);
+      tl.to(rig, merge(cam(2.82, A.x, A.y, 540, 690, -2), { duration: 0.65, ease: "none" }), 2.75);
+      // 3 · hard cut to screen B on the SAME device, already framed
+      tl.set($("cc-a"), { opacity: 0 }, 3.4);
+      tl.set($("cc-b"), { opacity: 1 }, 3.4);
+      tl.fromTo(rig, cam(2.75, 210, 660, 540, 700, 2), merge(cam(2.85, 210, 660, 540, 700, 2), { duration: 0.6, ease: "none", immediateRender: false }), 3.4);
+      // 4 · close-up on detail B
+      tl.to(rig, merge(cam(4.2, B.x, B.y, 600, 700, 0), sp("padrao")), 4.0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["cena-celular"] = tl;
+    })();
+  </script>
+</template>

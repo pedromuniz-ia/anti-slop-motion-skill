@@ -1,0 +1,105 @@
+<!doctype html>
+<!--
+  Stills board (HyperFrames): ONE key frame per scene, one per second, BEFORE animating anything.
+  Use it as the index.html of a separate project (e.g. <reel>/stills/), run
+    npx hyperframes snapshot --at 0.5,1.5,2.5 --no-end
+  and approve the sheet (snapshots/contact-sheet.jpg) with whoever asked for the video.
+
+  Each .still is a 1 s clip. The phone is declared through attributes:
+    data-s="1.45"            scale (1 = 473×932 px)
+    data-focus="196,300"     point of the SCREEN (pt, 393×852) that will stay at...
+    data-at="540,1140"       ...this point of the 1080×1920 frame
+    data-rot="-2"            rotation in degrees (optional)
+    data-img="assets/telas/x.png"                       real screen (output of motion.mjs phone), OR
+    data-todo="Real screen pending|what goes here|where it comes from"   striped placeholder until the screenshot arrives
+-->
+<html lang="pt-BR" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@500;600;700;800&display=block");
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #fbf6ef; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #fbf6ef; font-family: "Hanken Grotesk", sans-serif; color: #161210; }
+      .still { position: absolute; inset: 0; overflow: hidden; background: #fbf6ef; }
+
+      .ph { position: absolute; width: calc(473px * var(--s)); height: calc(932px * var(--s)); filter: drop-shadow(0 calc(26px * var(--s)) calc(40px * var(--s)) rgba(22, 18, 16, 0.2)); }
+      .ph .body { position: absolute; left: calc(26px * var(--s)); top: calc(26px * var(--s)); width: calc(421px * var(--s)); height: calc(880px * var(--s)); border-radius: calc(72px * var(--s));
+                  background: linear-gradient(160deg, #77777c 0%, #2c2c2e 30%, #1c1c1e 62%, #505054 100%); }
+      .ph .body::after { content: ""; position: absolute; inset: calc(3px * var(--s)); border-radius: calc(69px * var(--s)); background: #0a0a0a; }
+      .ph .scr { position: absolute; left: calc(40px * var(--s)); top: calc(40px * var(--s)); width: calc(393px * var(--s)); height: calc(852px * var(--s)); border-radius: calc(56px * var(--s)); overflow: hidden; background: #fff; }
+      .ph .scr img { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .ph .island { position: absolute; left: calc(134px * var(--s)); top: calc(11px * var(--s)); width: calc(125px * var(--s)); height: calc(37px * var(--s)); border-radius: calc(19px * var(--s)); background: #000; }
+      .ph .todo { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: calc(10px * var(--s)); padding: calc(120px * var(--s)) calc(30px * var(--s)) 0;
+                  background: repeating-linear-gradient(135deg, #eeeae4 0 calc(14px * var(--s)), #e6e1da calc(14px * var(--s)) calc(28px * var(--s)));
+                  color: #6b625c; text-align: center; font-weight: 700; font-size: calc(17px * var(--s)); line-height: 1.25; }
+      .ph .todo small { font-weight: 600; font-size: calc(12px * var(--s)); color: #9b9088; }
+
+      .fade { position: absolute; left: 0; right: 0; top: 1040px; bottom: 0; background: linear-gradient(to bottom, rgba(251, 246, 239, 0) 0px, #fbf6ef 170px); }
+      .cap { position: absolute; left: 50px; right: 50px; top: 1190px; height: 290px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+      .cap .sm { font-weight: 700; font-size: 50px; letter-spacing: -0.01em; }
+      .cap .key { font-weight: 800; font-size: 128px; line-height: 0.95; letter-spacing: -0.04em; color: #ff4d17; text-transform: uppercase; }
+      .kt { position: absolute; left: 70px; right: 70px; text-align: center; font-weight: 700; letter-spacing: -0.05em; line-height: 0.95; }
+      .kt .o { color: #ff4d17; }
+      .tag { position: absolute; left: 36px; top: 36px; font: 700 24px "Hanken Grotesk", sans-serif; color: #9b9088; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="stills" data-start="0" data-duration="3" data-width="1080" data-height="1920">
+      <!-- 1 · opening: sentence + wide phone with the screen still pending -->
+      <div class="still clip" data-start="0" data-duration="1" data-track-index="0">
+        <div class="ph" data-s="1.45" data-focus="196,300" data-at="540,1140" data-todo="Real Google Calendar|terça · Maria Souza 14:00|phone screenshot (pending)"></div>
+        <div class="fade"></div>
+        <div class="kt" style="top: 262px; font-size: 150px">Terça, <span class="o">14h.</span></div>
+        <div class="tag">1 · opening 0.0–2.0 s</div>
+      </div>
+
+      <!-- 2 · close-up on the point the narration mentions, with the real screen and the caption -->
+      <div class="still clip" data-start="1" data-duration="1" data-track-index="0">
+        <div class="ph" data-s="2.7" data-focus="196,517" data-at="540,690" data-rot="-2" data-img="assets/telas/tela-a.png"></div>
+        <div class="fade"></div>
+        <div class="cap"><div class="sm">A cadeira</div><div class="key">tá pronta</div></div>
+        <div class="tag">2 · close-up 2.0–3.7 s</div>
+      </div>
+
+      <!-- 3 · number (typography is the visual; the caption disappears) -->
+      <div class="still clip" data-start="2" data-duration="1" data-track-index="0">
+        <div class="kt" style="top: 560px; font-size: 360px; color: #ff4d17">11%</div>
+        <div class="kt" style="top: 930px; font-size: 96px">de faltas.</div>
+        <div class="tag">3 · data 5.3–9.0 s</div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        document.querySelectorAll(".ph").forEach(function (el) {
+          var s = parseFloat(el.dataset.s);
+          var f = el.dataset.focus.split(",").map(Number);
+          var a = el.dataset.at.split(",").map(Number);
+          var ox = (40 + f[0]) * s, oy = (40 + f[1]) * s;
+          el.style.setProperty("--s", s);
+          el.style.left = a[0] - ox + "px";
+          el.style.top = a[1] - oy + "px";
+          el.style.transformOrigin = ox + "px " + oy + "px";
+          if (el.dataset.rot) el.style.transform = "rotate(" + el.dataset.rot + "deg)";
+          el.setAttribute("data-layout-allow-overflow", "");
+          var body = document.createElement("div"); body.className = "body";
+          var scr = document.createElement("div"); scr.className = "scr";
+          if (el.dataset.img) { var im = document.createElement("img"); im.src = el.dataset.img; scr.appendChild(im); }
+          if (el.dataset.todo) {
+            var p = el.dataset.todo.split("|"), t = document.createElement("div");
+            t.className = "todo";
+            t.innerHTML = "<div>" + p[0] + "</div><small>" + (p[1] || "") + "</small><small>" + (p[2] || "") + "</small>";
+            scr.appendChild(t);
+          }
+          var isl = document.createElement("div"); isl.className = "island"; scr.appendChild(isl);
+          el.appendChild(body); el.appendChild(scr);
+        });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["stills"] = gsap.timeline({ paused: true });
+      })();
+    </script>
+  </body>
+</html>
